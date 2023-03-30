@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="RepairTweaks:jar">
+    <output-path>$PROJECT_DIR$/../../testingserver/plugins</output-path>
+    <root id="archive" name="RepairTweaks.jar">
+      <element id="module-output" name="RepairTweaks" />
+    </root>
+  </artifact>
+</component>

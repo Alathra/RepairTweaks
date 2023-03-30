@@ -19,7 +19,7 @@ public class RepairTweaks extends JavaPlugin implements Listener {
 	}
 
 	@EventHandler
-	public void move(PrepareAnvilEvent event) {
+	public void prepare(PrepareAnvilEvent event) {
 		if (event.getInventory() instanceof AnvilInventory) {
 			ItemStack repairItem = event.getInventory().getItem(1);
 			ItemStack tool = event.getInventory().getItem(0);
@@ -29,15 +29,12 @@ public class RepairTweaks extends JavaPlugin implements Listener {
 						event.getInventory().setMaximumRepairCost(1000);
 						int needed = 0;
 						if (tool.getItemMeta() instanceof Damageable) {
-							needed = ((Damageable) tool.getItemMeta()).getDamage()
-									/ (tool.getType().getMaxDurability() / 4) + 1;
+							needed = ((Damageable) tool.getItemMeta()).getDamage() / (tool.getType().getMaxDurability() / 4) + 1;
 							needed = Math.min(needed, 4);
 						}
 
 						System.out.println(needed);
-						int cost = (int) Math
-								.round(6.2D * Math.log(4.5D * (double) Math.min(repairItem.getAmount(), needed) - 0.5D)
-										+ 1.2D);
+						int cost = (int) Math.round(6.2D * Math.log(4.5D * (double) Math.min(repairItem.getAmount(), needed) - 0.5D) + 1.2D);
 						if (cost <= 0) {
 							cost = 0;
 						}
