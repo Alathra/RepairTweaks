@@ -1,0 +1,5 @@
+name: RepairTweaks
+version: 1.0
+author: AubriTheHuman
+main: com.aubrithehuman.repairtweaks.RepairTweaks
+api-version: 1.19
