@@ -27,8 +27,8 @@ public class RepairTweaks extends JavaPlugin implements Listener {
 				if (this.getConfig().getStringList("items").contains(tool.getType().name())) {
 					if (this.getConfig().getStringList("materials").contains(repairItem.getType().name())) {
 
-						//THIS IS A PRECAUTION (fixing isaacs bug!)
-						event.getInventory().setMaximumRepairCost(1000);
+						//THIS IS A PRECAUTION (fixing isaacs bug!) and still preventing spawn shop tools from repair
+						event.getInventory().setMaximumRepairCost(100);
 
 						//calc needed mats to repair
 						int needed = 0;
@@ -44,7 +44,7 @@ public class RepairTweaks extends JavaPlugin implements Listener {
 						* most tools will not have this effect them, mostly swords and armor are subject to this.
 						* this equation is totally refactorable and cheapenable
 						*/
-						int cost = (int) Math.round(6.2D * Math.log(4.5D * (double) Math.min(repairItem.getAmount(), needed) - 0.5D) + 1.2D);
+						int cost = (int) Math.round(this.getConfig().getDouble("costCoefficient") * Math.log(4.5D * (double) Math.min(repairItem.getAmount(), needed) - 0.5D) + 1.2D);
 						//this line can be removed to standardize it
 						cost += Math.max(((((Repairable) tool.getItemMeta()).getRepairCost() + 1) / 2) - 1, 0);
 
@@ -52,11 +52,15 @@ public class RepairTweaks extends JavaPlugin implements Listener {
 						if (cost <= 0) {
 							cost = 0;
 						}
-						if (cost >= 39) {
-							cost = 39;
+						if (cost >= this.getConfig().getInt("maxCost")) {
+							cost = this.getConfig().getInt("maxCost");
 //							System.out.println("NOT RIGHT");
 						}
-						event.getInventory().setRepairCost(cost);
+
+						//cap the max repair value, used to allow certain tools to remain unrepairable
+						if(((Repairable)event.getInventory().getItem(0).getItemMeta()).getRepairCost() < 100) {
+							event.getInventory().setRepairCost(cost);
+						}
 
 						//Trident Math Specifically
 						if (tool.getType() == Material.TRIDENT && repairItem.getType() == Material.PRISMARINE_CRYSTALS) {

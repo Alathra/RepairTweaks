@@ -90,3 +90,8 @@ materials:
   - 'LEATHER'
   - 'PHANTOM_MEMBRANE'
   - 'PRISMARINE_CRYSTALS'
+
+#cofigurable values
+maxCost: 25
+#this determines the cost of repairing, at this value, the cost for 4 materials is 14 levels, at 6.2 it is 19 levels.
+costCoefficient: 4.5
