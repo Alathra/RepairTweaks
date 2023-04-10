@@ -1,4 +1,4 @@
-# Include here the items that are repairable
+# Include here the items that are repairable (Vanilla repair types only)
 items:
   - 'WOODEN_SWORD'
   - 'WOODEN_SHOVEL'
@@ -64,9 +64,8 @@ items:
 
   - 'ELYTRA'
   - 'SHEARS'
-  - 'TRIDENT'
 
-# Include here the items used to repair
+# Include here the items used to repair (Vanilla repair types only)
 materials:
   - 'OAK_PLANKS'
   - 'BIRCH_PLANKS'
@@ -89,9 +88,21 @@ materials:
 
   - 'LEATHER'
   - 'PHANTOM_MEMBRANE'
-  - 'PRISMARINE_CRYSTALS'
 
 #cofigurable values
 maxCost: 25
 #this determines the cost of repairing, at this value, the cost for 4 materials is 14 levels, at 6.2 it is 19 levels.
 costCoefficient: 4.5
+
+#Map of custom repair tools and their materials, these do not need to be defined in the above lists.
+#Tools may be defined here for a secondary repair materials
+#This ONLY accounts for the base item, NBT IS IGNORED!!!!
+customRepair:
+    TRIDENT: 'PRISMARINE_CRYSTALS'
+    BOW: 'STRING'
+    CROSSBOW: 'STRING'
+    FISHING_ROD: 'STRING'
+    CARROT_ON_A_STICK: 'CARROT'
+    WARPED_FUNGUS_ON_A_STICK: 'WARPED_FUNGUS'
+    FLINT_AND_STEEL: 'FLINT'
+    TURTLE_HELMET: 'SCUTE'

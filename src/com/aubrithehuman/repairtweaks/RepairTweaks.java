@@ -1,6 +1,7 @@
 package com.aubrithehuman.repairtweaks;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,10 +13,39 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
 public class RepairTweaks extends JavaPlugin implements Listener {
+
+	Map<Material, Material> customTools = new HashMap<>();
+
 	public void onEnable() {
 		this.saveDefaultConfig();
 		this.getServer().getPluginManager().registerEvents(this, this);
+
+		loadCustomRepair();
+	}
+
+	/**
+	 * load repair info
+	 */
+	private void loadCustomRepair() {
+		ConfigurationSection section = this.getConfig().getConfigurationSection("customRepair");
+		Map<String,Object> map = section.getValues(false);
+		for(String s : map.keySet()) {
+			if(map.get(s) instanceof String ) {
+				Material mat1 = Material.getMaterial(s.toUpperCase());
+				Material mat2 = Material.getMaterial(((String) map.get(s)).toUpperCase());
+				if (mat1 != null && mat2 != null) {
+					customTools.put(mat1, mat2);
+					this.getLogger().log(Level.CONFIG, "[RepairTweaks]: Registered custom repair behavior for " + mat1.name() + " using material " + mat2.name() + ".");
+					continue;
+				}
+			}
+			this.getLogger().log(Level.WARNING, "[RepairTweaks]: Failed to load custom repair behavior for \"" + s + "\"");
+		}
 	}
 
 	@EventHandler
@@ -24,8 +54,8 @@ public class RepairTweaks extends JavaPlugin implements Listener {
 			ItemStack repairItem = event.getInventory().getItem(1);
 			ItemStack tool = event.getInventory().getItem(0);
 			if (repairItem != null && tool != null) {
-				if (this.getConfig().getStringList("items").contains(tool.getType().name())) {
-					if (this.getConfig().getStringList("materials").contains(repairItem.getType().name())) {
+				if (this.getConfig().getStringList("items").contains(tool.getType().name()) || customTools.keySet().contains(tool.getType())) {
+					if (this.getConfig().getStringList("materials").contains(repairItem.getType().name()) || customTools.values().contains(repairItem.getType())) {
 
 						//THIS IS A PRECAUTION (fixing isaacs bug!) and still preventing spawn shop tools from repair
 						event.getInventory().setMaximumRepairCost(100);
@@ -62,15 +92,19 @@ public class RepairTweaks extends JavaPlugin implements Listener {
 							event.getInventory().setRepairCost(cost);
 						}
 
-						//Trident Math Specifically
-						if (tool.getType() == Material.TRIDENT && repairItem.getType() == Material.PRISMARINE_CRYSTALS) {
-							ItemStack out = tool.clone();
-							Damageable meta = (Damageable) out.getItemMeta();
-							meta.setDamage(Math.max(0, meta.getDamage() - Math.min(needed, repairItem.getAmount())
-									* (tool.getType().getMaxDurability() / 4)));
-							((Repairable) meta).setRepairCost((((Repairable) meta).getRepairCost() + 1) * 2 - 1);
-							out.setItemMeta(meta);
-							event.setResult(out);
+						//Custom repair Math Specifically
+						//if the repair item and the tool item are registered
+						if (customTools.keySet().contains(tool.getType()) && customTools.values().contains(repairItem.getType())) {
+							//check if its a match
+							if(customTools.get(tool.getType()) == repairItem.getType()) {
+								ItemStack out = tool.clone();
+								Damageable meta = (Damageable) out.getItemMeta();
+								meta.setDamage(Math.max(0, meta.getDamage() - Math.min(needed, repairItem.getAmount())
+										* (tool.getType().getMaxDurability() / 4)));
+								((Repairable) meta).setRepairCost((((Repairable) meta).getRepairCost() + 1) * 2 - 1);
+								out.setItemMeta(meta);
+								event.setResult(out);
+							}
 						}
 					} else {
 						event.getInventory().setMaximumRepairCost(40);
@@ -101,10 +135,10 @@ public class RepairTweaks extends JavaPlugin implements Listener {
 				}
 
 				//Replace grabbed item with old repairCost tag
-				if (this.getConfig().getStringList("items").contains(item.getType().name())) {
+				if (this.getConfig().getStringList("items").contains(item.getType().name()) || customTools.keySet().contains(item.getType())) {
 					ItemStack[] contents = ((AnvilInventory) event.getInventory()).getContents();
 					if (contents[0] != null && contents[1] != null
-							&& this.getConfig().getStringList("materials").contains(contents[1].getType().name())) {
+							&& (this.getConfig().getStringList("materials").contains(contents[1].getType().name()) || customTools.values().contains(contents[1].getType()))) {
 						Repairable repairable = (Repairable) contents[0].getItemMeta();
 						Repairable repairableNew = (Repairable) item.getItemMeta();
 						if (repairable != null && repairableNew != null) {
@@ -114,21 +148,24 @@ public class RepairTweaks extends JavaPlugin implements Listener {
 							event.setCurrentItem(item);
 						}
 
-						//Trident Crystals refund (it consumes the whole stack, so this calculated how much to gift the player back
-						if (contents[0].getType() == Material.TRIDENT && contents[1].getType() == Material.PRISMARINE_CRYSTALS) {
-							ItemStack crystals = contents[1].clone();
+						//Custom Repairs refund (it consumes the whole stack, so this calculated how much to gift the player back
+						if (customTools.keySet().contains(contents[0].getType()) && customTools.values().contains(contents[1].getType()) && customTools.keySet().contains(item.getType())) {
+							//check if its a match
+							if(customTools.get(contents[0].getType()) == contents[1].getType()) {
+								ItemStack mats = contents[1].clone();
 
-							int needed = 0;
-							if (contents[0].getItemMeta() instanceof Damageable) {
-								needed = ((Damageable) contents[0].getItemMeta()).getDamage() / (contents[0].getType().getMaxDurability() / 4) + 1;
+								int needed = 0;
+								if (contents[0].getItemMeta() instanceof Damageable) {
+									needed = ((Damageable) contents[0].getItemMeta()).getDamage() / (contents[0].getType().getMaxDurability() / 4) + 1;
+								}
+								needed = Math.min(needed, 4);
+
+								int amount = mats.getAmount() - needed;
+								if (amount < 0) amount = 0;
+								mats.setAmount(amount);
+
+								event.getWhoClicked().getWorld().dropItem(event.getWhoClicked().getLocation(), mats);
 							}
-							needed = Math.min(needed, 4);
-
-							int amount = crystals.getAmount() - needed;
-							if (amount < 0) amount = 0;
-							crystals.setAmount(amount);
-
-							event.getWhoClicked().getWorld().dropItem(event.getWhoClicked().getLocation(), crystals);
 						}
 					}
 				}
