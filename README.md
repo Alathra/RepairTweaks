@@ -14,3 +14,16 @@ Repairing with raw materials also does not increase the tools repair cost, meani
 
 Despite this, raw enchanting is still less xp effificent for simple tools, up to 7 combines.
 When installed, existing tools will not work well with this system.
+
+# Custom Repairs
+`1.2+` Custom repair definitions can be set in the config file under the option `customRepair:`
+
+These will only look at the raw item type, and ignore any nbt attached to the item. Items defined to have vanilla behavior change can have an alternate material assigned this way.
+
+Can be defined as:
+```
+customRepair:
+    TRIDENT: 'PRISMARINE_CRYSTALS'
+    BOW: 'STRING'
+    CROSSBOW: 'STRING'
+```
