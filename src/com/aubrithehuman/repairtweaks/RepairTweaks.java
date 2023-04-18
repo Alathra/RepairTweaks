@@ -19,13 +19,23 @@ import java.util.logging.Level;
 
 public class RepairTweaks extends JavaPlugin implements Listener {
 
-	Map<Material, Material> customTools = new HashMap<>();
+	public static Map<Material, Material> customTools = new HashMap<>();
+
+	static RepairTweaks instance;
 
 	public void onEnable() {
+		instance = this;
 		this.saveDefaultConfig();
 		this.getServer().getPluginManager().registerEvents(this, this);
 
+		new RTCommand();
+		getCommand("repairtweaks").setTabCompleter(new RTCommand());
+
 		loadCustomRepair();
+	}
+
+	public RepairTweaks getInstance() {
+		return instance;
 	}
 
 	/**

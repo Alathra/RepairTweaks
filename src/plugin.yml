@@ -1,5 +1,10 @@
 name: RepairTweaks
-version: 1.2.0
+version: 1.2.1
 author: AubriTheHuman
 main: com.aubrithehuman.repairtweaks.RepairTweaks
 api-version: 1.19
+
+commands:
+  repairtweaks:
+    description: list info abour the plugin
+    usage: /repairtweaks
