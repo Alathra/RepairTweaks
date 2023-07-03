@@ -27,6 +27,8 @@ public class CustomToolsHolder {
      * load repair info from config
      */
     public void loadCustomRepairRecipes() {
+        customTools.clear();
+
         ConfigurationSection section = instance.getConfig().getConfigurationSection("customRepair");
 
         if (section == null) {

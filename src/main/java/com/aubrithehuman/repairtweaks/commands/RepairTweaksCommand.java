@@ -19,7 +19,9 @@ public class RepairTweaksCommand {
                 new CommandAPICommand("info")
                     .executes(this::info),
                 new CommandAPICommand("tweaks")
-                    .executes(this::tweaks)
+                    .executes(this::tweaks),
+                new CommandAPICommand("reload")
+                    .executes(this::reload)
             )
             .executes(this::info)
             .register();
@@ -42,6 +44,14 @@ public class RepairTweaksCommand {
 
         sender.sendMessage(
             new ColorParser(msg.toString()).build()
+        );
+    }
+
+    private void reload(CommandSender sender, CommandArguments args) {
+        CustomToolsHolder.getInstance().loadCustomRepairRecipes();
+
+        sender.sendMessage(
+            new ColorParser("%s Reloaded config.".formatted(ChatUtil.PREFIX)).build()
         );
     }
 }
