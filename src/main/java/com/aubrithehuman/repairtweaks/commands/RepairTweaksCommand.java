@@ -1,6 +1,7 @@
 package com.aubrithehuman.repairtweaks.commands;
 
 import com.aubrithehuman.repairtweaks.RepairTweaks;
+import com.aubrithehuman.repairtweaks.data.CustomToolsHolder;
 import com.aubrithehuman.repairtweaks.utilities.ChatUtil;
 import com.github.milkdrinkers.colorparser.ColorParser;
 import dev.jorel.commandapi.CommandAPICommand;
@@ -35,8 +36,8 @@ public class RepairTweaksCommand {
     private void tweaks(CommandSender sender, CommandArguments args) {
         final StringBuilder msg = new StringBuilder("%s Custom repair combinations:".formatted(ChatUtil.PREFIX));
 
-        for (Material m : RepairTweaks.customTools.keySet()) {
-            msg.append("\n <grey>- <#7CD36E>%s <grey>+ <#7CD36E>%s".formatted(m.name(), RepairTweaks.customTools.get(m).name()));
+        for (Material m : CustomToolsHolder.getInstance().getCustomTools().keySet()) {
+            msg.append("\n <grey>- <#7CD36E>%s <grey>+ <#7CD36E>%s".formatted(m.name(), CustomToolsHolder.getInstance().getCustomTools().get(m).name()));
         }
 
         sender.sendMessage(

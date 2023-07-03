@@ -4,10 +4,10 @@ import com.aubrithehuman.repairtweaks.RepairTweaks;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 
-public class CommandManager {
+public class CommandHandler {
     private final RepairTweaks instance;
 
-    public CommandManager(RepairTweaks instance) {
+    public CommandHandler(RepairTweaks instance) {
         this.instance = instance;
     }
 
