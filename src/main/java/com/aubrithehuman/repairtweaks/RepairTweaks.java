@@ -1,5 +1,7 @@
 package com.aubrithehuman.repairtweaks;
 
+import com.aubrithehuman.repairtweaks.commands.CommandManager;
+import com.aubrithehuman.repairtweaks.commands.RepairTweaksCommand;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -21,20 +23,29 @@ public class RepairTweaks extends JavaPlugin implements Listener {
 
 	public static Map<Material, Material> customTools = new HashMap<>();
 
-	static RepairTweaks instance;
+	private static RepairTweaks instance;
+    private CommandManager commandManager;
+
+    public void onLoad() {
+        instance = this;
+        commandManager = new CommandManager(instance);
+
+        commandManager.onLoad();
+    }
 
 	public void onEnable() {
-		instance = this;
 		this.saveDefaultConfig();
 		this.getServer().getPluginManager().registerEvents(this, this);
 
-		new RTCommand();
-		getCommand("repairtweaks").setTabCompleter(new RTCommand());
-
 		loadCustomRepair();
+        commandManager.onEnable();
 	}
 
-	public RepairTweaks getInstance() {
+    public void onDisable() {
+        commandManager.onDisable();
+    }
+
+	public static RepairTweaks getInstance() {
 		return instance;
 	}
 
