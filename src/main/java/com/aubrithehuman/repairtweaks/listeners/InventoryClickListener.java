@@ -82,7 +82,8 @@ public class InventoryClickListener implements ListenerI {
             }
 
             // Custom Repairs refund (it consumes the whole stack, so this calculated how much to gift the player back)
-            if (customTools.containsKey(item1.getType()) && customTools.containsValue(item2.getType()) && customTools.containsKey(item.getType())) {
+            // Don't run if player can't upgrade
+            if (inv.getRepairCost() <= p.getLevel() && customTools.containsKey(item1.getType()) && customTools.containsValue(item2.getType()) && customTools.containsKey(item.getType())) {
                 //check if its a match
                 if (customTools.get(item1.getType()) == item2.getType()) {
                     ItemStack mats = item2.clone();
